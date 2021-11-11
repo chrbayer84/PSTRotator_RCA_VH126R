@@ -10,4 +10,4 @@ COM-00097 Mini Pushbutton Switch (to Park the antenna)
 Wiring
 Arduino Pin 3 to LED Anode (long leg)
 Arduino Power GND to 330Ohm to LED Cathode (short leg)
-Arduino Pin 12 and GND to switch or jumper to support 180 degrees instead of 360.
+Optional: Arduino Pin 12 to switch and then GND support 180 degrees instead of 360 when shorted
