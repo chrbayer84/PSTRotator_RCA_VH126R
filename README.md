@@ -13,3 +13,6 @@ Wiring:
 1. Arduino Pin 3 to LED Anode (long leg)  
 2. Arduino Power GND to 330Ohm to LED Cathode (short leg)  
 3. Optional: Arduino Pin 12 to a switch and then GND to support 180 degrees instead of 360 when shorted -- or just use a jumper
+
+Some info on hooking things up
+https://learn.sparkfun.com/tutorials/ir-control-kit-hookup-guide#example-3-transmitting
