@@ -1,6 +1,7 @@
+
+#define IR_SEND_PIN 3
 #include <Wire.h>
-#include <IRremote.h>
-#include <SerLCD.h>
+#include <IRremote.hpp>
 #include <EEPROM.h>
 
 // constants
@@ -10,14 +11,14 @@
 #define HEADER3 "W9MDB 2022-04-01"
 // If degreesPin is shorted we'll use 15 degree intervals
 const int degreesPin = 12;
-const int sendPin = 3;
-IRsend irsend(sendPin);
+
+//IrSender irSender(sendPin);
 
 #define PARKADDR 0xff
 
 // variables
 int degreesPer = 30;  // Use 30 for 360 degree and 15 for 180 degree rotation
-int debug = 0;
+int debug = 1;
 int azimuth = 0;
 int azimuthNew = 0;
 int delayTime = 5;
@@ -28,7 +29,6 @@ String inputString;
 String tmpString;
 bool stringComplete;
 char ircode='A';
-SerLCD lcd;
 
 #define PARKED ((unsigned char)0x1f)
 #define NOTPARKED ((unsigned char)0x00)
@@ -42,14 +42,15 @@ void setup() {
   // LCD stuff
   Serial.begin(4800);
   inputString.reserve(8);
-  Wire.begin();
-  lcd.begin(Wire);
-  delay(500);
-  lcd.clear();
-  lcd.print(HEADER2);
-  lcd.setCursor(0,1);
-  lcd.print(HEADER3);
-  IrSender.begin(sendPin, ENABLE_LED_FEEDBACK); 
+  // Wire.begin();
+  // lcd.begin(Wire);
+  // delay(500);
+  // lcd.clear();
+  // lcd.print(HEADER2);
+  // lcd.setCursor(0,1);
+  // lcd.print(HEADER3);
+  uint8_t tSendPin = 3;
+  IrSender.begin(true, 0); 
   delay(3000);
 
   parked();
@@ -59,10 +60,10 @@ void setup() {
   }
   else
   {
-    lcd.clear();
-    lcd.write(HEADER);
-    lcd.setCursor(0,1);
-    lcd.write("Parked");
+    // lcd.clear();
+    // lcd.write(HEADER);
+    // lcd.setCursor(0,1);
+    // lcd.write("Parked");
   }
   EEPROM_writePark(PARKED);
 }
@@ -71,16 +72,16 @@ bool parked()
 {
  unsigned char value;
  EEPROM.get(PARKADDR, value);
- lcd.print("\nParked="+(String)value);
+ // lcd.print("\nParked="+(String)value);
  return value == PARKED;
 }
 
 void park()
 {
-    lcd.clear();
-    lcd.write("Park");
+    // lcd.clear();
+    // lcd.write("Park");
     if (debug) Serial.println("INIT Antenna to azimuth=0\r\n");
-    sendNEC(0x6, 0x10, 0x05);
+    IrSender.sendNEC(0x6, 0x10, 0x05);
     azimuth = 340;
     azimuthNew = 0;
 }
@@ -186,25 +187,25 @@ void move(int azimuth)
   char letter = az2char(azimuth);
   int cmd = 0x04 + (letter - 'A');
   if (debug) {Serial.print("Move to ");Serial.print(azimuth);Serial.print("=");Serial.println(letter);}
-  sendNEC(0x6, cmd, 5);
+  IrSender.sendNEC(0x6, cmd, 5);
   //lcd.setCursor(0,0);
   //lcd.write("                ");
   //lcd.setCursor(0,0);
-  lcd.clear();
-  lcd.write("Move to ");lcd.print(azimuth);lcd.print("  ");
+  // lcd.clear();
+  // lcd.write("Move to ");lcd.print(azimuth);lcd.print("  ");
   position();
   EEPROM_writePark(NOTPARKED);
 }
 
 void position()
 {
-  lcd.setCursor(0,1);
-  lcd.write("Az ");
-  lcd.write(String(azimuth).c_str());
-  lcd.write("  ");
-  lcd.setCursor(10,1);
-  lcd.write("Code=");
-  lcd.write(ircode);
+  // lcd.setCursor(0,1);
+  // lcd.write("Az ");
+  // lcd.write(String(azimuth).c_str());
+  // lcd.write("  ");
+  // lcd.setCursor(10,1);
+  // lcd.write("Code=");
+  // lcd.write(ircode);
 }
 
 void loop() {
@@ -237,8 +238,8 @@ void loop() {
   else if (moving)
   {
     moving = false;
-    lcd.setCursor(0,0);
-    lcd.write(HEADER);
+    // lcd.setCursor(0,0);
+    // lcd.write(HEADER);
   }
   if (azimuth == 0) 
   {
